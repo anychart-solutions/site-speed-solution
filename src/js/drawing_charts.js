@@ -111,7 +111,7 @@ function drawVisitsInTime() {
   });
   VisitsInTimeChart.xAxis().labels().padding([5,0,0,0]);
   VisitsInTimeChart.xScale(dateScale);
-  VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
+  //VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
   VisitsInTimeChart.padding([20,70,0,0]);
 
   VisitsInTimeChart.listen('pointMouseOver', function(evt) {
@@ -223,7 +223,7 @@ function drawSiteSpeedInTime(value) {
   SiteSpeedInTimeChart.xAxis(1).labels(null);
   SiteSpeedInTimeChart.xScale().ticks().interval('min', interval);
   SiteSpeedInTimeChart.xScale(dateScale);
-  SiteSpeedInTimeChart.xScale().ticks().interval('n', interval*2);
+  //SiteSpeedInTimeChart.xScale().ticks().interval('n', interval*2);
   SiteSpeedInTimeChart.xAxis().labels().textFormatter(function(value) {
     var date = new Date(value['tickValue']);
     var res = date.getHours() + ':' + date.getMinutes();
