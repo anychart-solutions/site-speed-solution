@@ -1,0 +1,61 @@
+#container-log{
+    height: 200px;
+    width: 100%;
+    float: right;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+#logger_wrapper{
+    height: 100%;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border: 1px solid #DDDDDD;
+    background: #f6f6f6;
+    font-size: 12px;
+    position: relative;
+    font-family: 'Courier new', Courier, Helvetica, sans-serif;
+}
+
+#logger{
+    width: 5000px;
+    background: #f6f6f6;
+    overflow-y: scroll;
+    position: absolute;
+    top: 77px;
+    bottom: 0;
+    border: none;
+    padding: 10px;
+}
+.logger_info{
+    width: 5000px;
+    position: absolute;
+    top: 0;
+    padding: 10px 10px 0 10px;
+    border-bottom: 1px solid #dddddd;
+}
+.logger_info h2{
+    margin: 0;
+    padding: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 20px;
+}
+.logger_info h6{
+    margin: 0 0 10px 0;
+    padding: 0;
+    color: #929292;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 16px;
+}
+.logger_info p{
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+}
+@media (min-width: 768px) {
+    #container-log{
+        height: 100%;
+        width: 30%;
+    }
+}
