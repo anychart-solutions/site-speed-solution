@@ -5,7 +5,9 @@
 html {
     height: 100%;
 }
-
+.code-font{
+    font-family: 'Courier new', Courier, Helvetica, sans-serif;
+}
 
 .navbar-brand{
     position: relative;
