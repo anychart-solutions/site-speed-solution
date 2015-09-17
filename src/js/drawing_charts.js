@@ -15,6 +15,7 @@ var lineColor = '#CECECE';
 var activeColor = '#545f69';
 var showTooltip = false;
 var showSecondTooltip = false;
+var groupedDataSet;
 
 
 function createBarLegendChart(value){
@@ -111,7 +112,7 @@ function drawVisitsInTime() {
   });
   VisitsInTimeChart.xAxis().labels().padding([5,0,0,0]);
   VisitsInTimeChart.xScale(dateScale);
-  //VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
+  VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
   VisitsInTimeChart.padding([20,70,0,0]);
 
   VisitsInTimeChart.listen('pointMouseOver', function(evt) {
@@ -125,10 +126,10 @@ function drawVisitsInTime() {
     var avgSpeed = seriesData.get(index, 'speed');
     var speedTitle;
     if (avgSpeed >= 2) speedTitle = 'Very Slow';
-    if (1.5 < avgSpeed && avgSpeed < 2) speedTitle = 'Slow';
-    if (1 < avgSpeed && avgSpeed <= 1.5) speedTitle = 'Not Fast';
-    if (0.5 < avgSpeed && avgSpeed <= 1) speedTitle = 'Fast';
-    if (avgSpeed <= 0.5) speedTitle = 'Very Fast';
+    else if (1.5 < avgSpeed && avgSpeed < 2) speedTitle = 'Slow';
+    else if (1 < avgSpeed && avgSpeed <= 1.5) speedTitle = 'Not Fast';
+    else if (0.5 < avgSpeed && avgSpeed <= 1) speedTitle = 'Fast';
+    else if (avgSpeed <= 0.5) speedTitle = 'Very Fast';
     var date = new Date(seriesData.get(index, 'x'));
     var res = date.getHours() + ':' + date.getMinutes();
     $('#tooltip_chart_1 .title .time').html(res.replace(':0', ':00'));
@@ -163,11 +164,23 @@ function drawVisitsInTime() {
 
   VisitsInTimeChart.listen('mouseMove', function(evt) {
     if (showTooltip)
-    $('#tooltip_chart_1').css('top', evt.clientY - 10 - ($('#tooltip_chart_1').height() / 2) ).css('left', evt.clientX + 10)
+      $('#tooltip_chart_1').css('top', evt.clientY - 10 - ($('#tooltip_chart_1').height() / 2) ).css('left', evt.clientX + 10)
   });
 
-  var series = VisitsInTimeChart.column();
-  series.tooltip(false);
+  var series = VisitsInTimeChart.column()
+      .fill(function () {
+        // this.iterator.get('speed') - иногда бывает undefined !!! todo: why?!
+        if (this.iterator.get('speed')){
+          var speed = parseFloat(this.iterator.get('speed'));
+          if (speed >= 2) return speedEvaluateColor[4] + ' 0.85';
+          if (1.5 < speed && speed < 2) return speedEvaluateColor[3] + ' 0.85';
+          if (1 < speed && speed <= 1.5) return speedEvaluateColor[2] + ' 0.85';
+          if (0.5 < speed && speed <= 1) return speedEvaluateColor[1] + ' 0.85';
+          if (speed <= 0.5) return speedEvaluateColor[0] + ' 0.85';
+        }
+      })
+      .stroke(null)
+      .tooltip(false);
   return VisitsInTimeChart
 }
 
@@ -184,14 +197,41 @@ function drawSiteSpeedInTime(value) {
   SiteSpeedInTimeChart.xAxis().orientation('bottom');
   SiteSpeedInTimeChart.xAxis(1).orientation('top');
   SiteSpeedInTimeChart.palette(chartColors);
-  var dateScale = anychart.scales.dateTime();
 
-  SiteSpeedInTimeChart.area().name('DNS').stroke(function() { return this.sourceColor + ' 0.6'}).fill(function() { return this.sourceColor + ' 0.7'});
-  SiteSpeedInTimeChart.area().name('Connect').stroke(function() { return this.sourceColor + ' 0.6'}).fill(function() { return this.sourceColor + ' 0.7'});
-  SiteSpeedInTimeChart.area().name('Response').stroke(function() { return this.sourceColor + ' 0.6'}).fill(function() { return this.sourceColor + ' 0.7'});
-  SiteSpeedInTimeChart.area().name('Html Loading').stroke(function() { return this.sourceColor + ' 0.6'}).fill(function() { return this.sourceColor + ' 0.7'});
-  SiteSpeedInTimeChart.area().name('Html Processing').stroke(function() { return this.sourceColor + ' 0.6'}).fill(function() { return this.sourceColor + ' 0.7'});
-  SiteSpeedInTimeChart.area().name('Html Rendering').clip(false)
+  SiteSpeedInTimeChart.area()
+      .name('DNS')
+      .stroke(function() { return this.sourceColor + ' 0.6'})
+      .fill(function() { return this.sourceColor + ' 0.7'})
+      .tooltip(null)
+      .hoverFill(function(){return this.sourceColor});
+  SiteSpeedInTimeChart.area()
+      .name('Connect')
+      .stroke(function() { return this.sourceColor + ' 0.6'})
+      .fill(function() { return this.sourceColor + ' 0.7'})
+      .tooltip(null)
+      .hoverFill(function(){return this.sourceColor});
+  SiteSpeedInTimeChart.area()
+      .name('Response')
+      .stroke(function() { return this.sourceColor + ' 0.6'})
+      .fill(function() { return this.sourceColor + ' 0.7'})
+      .tooltip(null)
+      .hoverFill(function(){return this.sourceColor});
+  SiteSpeedInTimeChart.area()
+      .name('Html Loading')
+      .stroke(function() { return this.sourceColor + ' 0.6'})
+      .fill(function() { return this.sourceColor + ' 0.7'})
+      .tooltip(null)
+      .hoverFill(function(){return this.sourceColor});
+  SiteSpeedInTimeChart.area()
+      .name('Html Processing').stroke(function() { return this.sourceColor + ' 0.6'})
+      .fill(function() { return this.sourceColor + ' 0.7'})
+      .tooltip(null)
+      .hoverFill(function(){return this.sourceColor});
+  SiteSpeedInTimeChart.area()
+      .name('Html Rendering')
+      .clip(false)
+      .tooltip(null)
+      .hoverFill(function(){return this.sourceColor})
     .markers()
       .enabled(true)
       .type('circle');
@@ -220,10 +260,10 @@ function drawSiteSpeedInTime(value) {
     .anchor('leftCenter')
     .offsetX(5);
 
+  var dateScale = anychart.scales.dateTime();
   SiteSpeedInTimeChart.xAxis(1).labels(null);
-  SiteSpeedInTimeChart.xScale().ticks().interval('min', interval);
   SiteSpeedInTimeChart.xScale(dateScale);
-  //SiteSpeedInTimeChart.xScale().ticks().interval('n', interval*2);
+  SiteSpeedInTimeChart.xScale().ticks().interval('n', interval*2);
   SiteSpeedInTimeChart.xAxis().labels().textFormatter(function(value) {
     var date = new Date(value['tickValue']);
     var res = date.getHours() + ':' + date.getMinutes();
@@ -294,11 +334,11 @@ function drawCharts() {
   table.cellBorder(null);
   table.getRow(0).height(130);
   table.getRow(1).height('35%');
-  table.container(stage).draw();
   table.getCell(0, 0).content(createBarLegendChart(1.4));
   table.getCell(1, 0).content(drawVisitsInTime());
   table.getCell(2, 0).content(drawSiteSpeedInTime(1.4));
   drawTooltipChart();
+  table.container(stage).draw();
 }
 
 function getPagesData(sum_pagesData) {
@@ -415,43 +455,35 @@ function updateAndGroupData(data) {
  */
 function updateChartsData(data) {
   var dataGrouped = updateAndGroupData(data);
-  var dataGroupedSet = anychart.data.set(dataGrouped);
+  if (groupedDataSet) {
+    groupedDataSet.data(dataGrouped);
+  } else {
+    groupedDataSet = anychart.data.set(dataGrouped);
 
-  var visitsInTimeGroupedData = dataGroupedSet.mapAs(null, {'value': ['viewers_count'], 'speed': ['speed']});
-  VisitsInTimeChart.getSeries(0).data(visitsInTimeGroupedData)
-      .fill(function () {
-        // dataGrouped[this.index] - иногда бывает undefined !!! todo: why?!
-        if (dataGrouped[this.index]){
-          var speed = parseFloat(dataGrouped[this.index]['speed']);
-          if (speed >= 2) return speedEvaluateColor[4] + ' 0.85';
-          if (1.5 < speed && speed < 2) return speedEvaluateColor[3] + ' 0.85';
-          if (1 < speed && speed <= 1.5) return speedEvaluateColor[2] + ' 0.85';
-          if (0.5 < speed && speed <= 1) return speedEvaluateColor[1] + ' 0.85';
-          if (speed <= 0.5) return speedEvaluateColor[0] + ' 0.85';
-        }
+    var visitsInTimeGroupedData = groupedDataSet.mapAs(null, {'value': ['viewers_count'], 'speed': ['speed']});
+    VisitsInTimeChart.getSeries(0).data(visitsInTimeGroupedData);
 
-      })
-      .stroke(null);
+    var SiteSpeedInTimeDataDns = groupedDataSet.mapAs(null, {'value': ['dns_ms']});
+    SiteSpeedInTimeChart.getSeries(0).data(SiteSpeedInTimeDataDns);
+
+    var SiteSpeedInTimeDataConnect = groupedDataSet.mapAs(null, {'value': ['connect_ms']});
+    SiteSpeedInTimeChart.getSeries(1).data(SiteSpeedInTimeDataConnect);
+
+    var SiteSpeedInTimeDataResponse = groupedDataSet.mapAs(null, {'value': ['response_ms']});
+    SiteSpeedInTimeChart.getSeries(2).data(SiteSpeedInTimeDataResponse);
+
+    var SiteSpeedInTimeDataHtmlLoading = groupedDataSet.mapAs(null, {'value': ['html_loading_ms']});
+    SiteSpeedInTimeChart.getSeries(3).data(SiteSpeedInTimeDataHtmlLoading);
+
+    var SiteSpeedInTimeDataHtmlProcessing = groupedDataSet.mapAs(null, {'value': ['html_processing_ms']});
+    SiteSpeedInTimeChart.getSeries(4).data(SiteSpeedInTimeDataHtmlProcessing);
+
+    var SiteSpeedInTimeDataHtmlRendering = groupedDataSet.mapAs(null, {'value': ['html_rendering_ms']});
+    SiteSpeedInTimeChart.getSeries(5).data(SiteSpeedInTimeDataHtmlRendering);
+  }
+
   VisitsInTimeChart.xScale().maximum(alignDateLeft((new Date()).getTime(), interval));
   SiteSpeedInTimeChart.xScale().maximum(alignDateLeft((new Date()).getTime(), interval));
-
-  var SiteSpeedInTimeDataDns = dataGroupedSet.mapAs(null, {'value': ['dns_ms']});
-  SiteSpeedInTimeChart.getSeries(0).data(SiteSpeedInTimeDataDns).tooltip(null).hoverFill(function(){return this.sourceColor});
-
-  var SiteSpeedInTimeDataConnect = dataGroupedSet.mapAs(null, {'value': ['connect_ms']});
-  SiteSpeedInTimeChart.getSeries(1).data(SiteSpeedInTimeDataConnect).tooltip(null).hoverFill(function(){return this.sourceColor});
-
-  var SiteSpeedInTimeDataResponse = dataGroupedSet.mapAs(null, {'value': ['response_ms']});
-  SiteSpeedInTimeChart.getSeries(2).data(SiteSpeedInTimeDataResponse).tooltip(null).hoverFill(function(){return this.sourceColor});
-
-  var SiteSpeedInTimeDataHtmlLoading = dataGroupedSet.mapAs(null, {'value': ['html_loading_ms']});
-  SiteSpeedInTimeChart.getSeries(3).data(SiteSpeedInTimeDataHtmlLoading).tooltip(null).hoverFill(function(){return this.sourceColor});
-
-  var SiteSpeedInTimeDataHtmlProcessing = dataGroupedSet.mapAs(null, {'value': ['html_processing_ms']});
-  SiteSpeedInTimeChart.getSeries(4).data(SiteSpeedInTimeDataHtmlProcessing).tooltip(null).hoverFill(function(){return this.sourceColor});
-
-  var SiteSpeedInTimeDataHtmlRendering = dataGroupedSet.mapAs(null, {'value': ['html_rendering_ms']});
-  SiteSpeedInTimeChart.getSeries(5).data(SiteSpeedInTimeDataHtmlRendering).tooltip(null).hoverFill(function(){return this.sourceColor});
 }
 
 
@@ -466,9 +498,8 @@ function alignDateLeft(date, interval) {
   return Date.UTC(years, months, days, hours, minutes);
 }
 
-function alignLeft(value, interval, opt_base) {
-  opt_base = opt_base || 0;
-  var mod = (value - opt_base) % interval;
+function alignLeft(value, interval) {
+  var mod = value % interval;
   if (mod < 0)
     mod += interval;
   if (mod >= interval)
