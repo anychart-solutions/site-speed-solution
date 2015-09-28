@@ -62,13 +62,13 @@ var generatePageName = function () {
 function generateData(datetime) {
   if (!datetime) datetime = (new Date).getTime();
   var result =
-      datetime + ';' +                      // time
-      genNumber(datetime, 5, 10) + ';' +       // dns_ms
-      genNumber(datetime, 1, 50) + ';' +        // connect_ms
-      genNumber(datetime, 200, 800) + ';' +    // response_ms
-      genNumber(datetime, 50, 20) + ';' +      // html_loading_ms
-      genNumber(datetime, 200, 700) + ';' +    // html_processing_ms
-      genNumber(datetime, 5, 100) + ';' +     // html_rendering_ms
+      datetime + ';' +                                  // time
+      genNumber(datetime, 5, 10) + ';' +                // dns_ms
+      genNumber(datetime, 1, 50) + ';' +                // connect_ms
+      genNumber(datetime, 200, 800) + ';' +             // response_ms
+      genNumber(datetime, 50, 20) + ';' +               // html_loading_ms
+      genNumber(datetime, 200, 700) + ';' +             // html_processing_ms
+      genNumber(datetime, 5, 100) + ';' +               // html_rendering_ms
       Math.round(generateNumber(1, 100)) + ';"[';       // viewers_count
 
   var first = true;
