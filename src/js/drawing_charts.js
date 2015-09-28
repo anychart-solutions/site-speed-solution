@@ -1,17 +1,7 @@
 var SiteSpeedInTimeChart, VisitsInTimeChart, BarLegendChart, tooltipChart;
 var interval = 15;
-//var speedEvaluateColor = ['#64b5f6', '#1976d2', '#ffd54f', '#ef6c00', '#d84315'];
 var speedEvaluateColor = ['#fff59d', '#ffd54f', '#ffb74d', '#ef6c00', '#d84315'];
-//var chartColors = ['#00bcd4', '#006064', '#4db6ac', '#00796b', '#69f0ae', '#00bfa5'];
-//var chartColors = ['#bdbdbd', '#9e9e9e', '#757575', '#616161', '#455a64', '#78909c'];
-//var chartColors = ['#c62828', '#c51162', '#42a5f5', '#9ccc65', '#1976d2', '#1b5e20'];
-//var chartColors = ['#1b5e20', '#00838f', '#26c6da', '#0097a7', '#9ccc65', '#00bfa5'];
-//var chartColors = ['#263238', '#c62828', '#263238', '#26c6da', '#1976d2', '#00bfa5'];
-//var chartColors = ['#1b5e20', '#263238', '#42a5f5', '#1976d2', '#9ccc65', '#0097a7'];
-//var chartColors = ['#0097a7', '#01579b', '#B0DE09', '#0D8ECF', '#2A0CD0', '#CD0D74'];
-//var chartColors = ['#759c8e', '#dbd8cd', '#446b5f', '#2a3646', '#324a5c', '#50878b'];
 var chartColors = ['#cbd5cc', '#889995', '#4f3f46', '#4a4d62', '#79829e', '#a8b7d0'];
-var lineColor = '#CECECE';
 var activeColor = '#545f69';
 var showTooltip = false;
 var showSecondTooltip = false;
@@ -35,7 +25,7 @@ function createBarLegendChart(value){
     series.name(name);
   };
   BarLegendChart = anychart.bar();
-  BarLegendChart.palette(anychart.palettes.distinctColors().colors(speedEvaluateColor));
+  BarLegendChart.palette(anychart.palettes.distinctColors().items(speedEvaluateColor));
   BarLegendChart.xAxis().enabled(false);
   BarLegendChart.yAxis().labels().fontSize(10).padding([0,0,0,0]).textFormatter(function(){
     return this.value + 's'
@@ -45,9 +35,9 @@ function createBarLegendChart(value){
   BarLegendChart.yScale().minimum(0);
   BarLegendChart.yScale().stackMode('value');
   BarLegendChart.title()
-      .enabled(true)
-      .fontSize(15)
-      .text('Site Speed Evaluation');
+    .enabled(true)
+    .fontSize(15)
+    .text('Site Speed Evaluation');
 
   configureSeries(BarLegendChart.bar([0.5]), 'Very Fast', 0);
   configureSeries(BarLegendChart.bar([0.5]), 'Fast', 1);
@@ -86,7 +76,7 @@ function drawTooltipChart(){
   tooltipChart.yAxis().drawFirstLabel(false);
   tooltipChart.padding([0, 30, 0, 0]);
   var series = tooltipChart.bar();
-  series.tooltip(false).clip(false);
+  series.tooltip(false).clip(false).pointWidth(12.5);
   tooltipChart.barGroupsPadding(0.4);
   tooltipChart.container('container-pages-overview');
   tooltipChart.draw();
@@ -114,12 +104,21 @@ function drawVisitsInTime() {
   VisitsInTimeChart.xScale(dateScale);
   VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
   VisitsInTimeChart.padding([20,70,0,0]);
-
-  VisitsInTimeChart.listen('pointMouseOver', function(evt) {
+  VisitsInTimeChart.interactivity("byX");
+  
+  VisitsInTimeChart.listen('pointsHover', function(evt) {
+    
+  });
+  VisitsInTimeChart.listen('pointsHover', function(evt) {
+    var isHovered = evt.seriesStatus.length && evt.seriesStatus[0].points.length;
+    if (!isHovered) {
+      $('#tooltip_chart_1').hide();
+      return;
+    }
     showTooltip = true;
-    var index = evt.pointIndex;
+    var index = evt.seriesStatus[0].nearestPointToCursor.index;
     var series = evt.target;
-    var seriesData = series.data();
+    var seriesData = series.getSeries(0).data();
     var chartData = seriesData.get(index, 'pagesData');
     var pointsCount = chartData.length;
     var visitsAmount = 0;
@@ -154,10 +153,12 @@ function drawVisitsInTime() {
       }).stroke(null).labels()
         .enabled(true)
         .anchor('leftCenter');
+    tooltipChart.bounds().height(pointsCount * 25 + 25);
+    tooltipChart.container().height(pointsCount * 25 + 25);
     $('#tooltip_chart_1').show();
   });
 
-  VisitsInTimeChart.listen('pointMouseOut', function() {
+  VisitsInTimeChart.listen('points', function() {
     showTooltip = false;
     $('#tooltip_chart_1').hide();
   });
@@ -167,20 +168,19 @@ function drawVisitsInTime() {
       $('#tooltip_chart_1').css('top', evt.clientY - 10 - ($('#tooltip_chart_1').height() / 2) ).css('left', evt.clientX + 10)
   });
 
-  var series = VisitsInTimeChart.column()
-      .fill(function () {
-        // this.iterator.get('speed') - иногда бывает undefined !!! todo: why?!
-        if (this.iterator.get('speed')){
-          var speed = parseFloat(this.iterator.get('speed'));
-          if (speed >= 2) return speedEvaluateColor[4] + ' 0.85';
-          if (1.5 < speed && speed < 2) return speedEvaluateColor[3] + ' 0.85';
-          if (1 < speed && speed <= 1.5) return speedEvaluateColor[2] + ' 0.85';
-          if (0.5 < speed && speed <= 1) return speedEvaluateColor[1] + ' 0.85';
-          if (speed <= 0.5) return speedEvaluateColor[0] + ' 0.85';
-        }
-      })
-      .stroke(null)
-      .tooltip(false);
+  VisitsInTimeChart.column()
+    .fill(function () {
+      if (this.iterator.get('speed')){
+        var speed = parseFloat(this.iterator.get('speed'));
+        if (speed >= 2) return speedEvaluateColor[4] + ' 0.85';
+        if (1.5 < speed && speed < 2) return speedEvaluateColor[3] + ' 0.85';
+        if (1 < speed && speed <= 1.5) return speedEvaluateColor[2] + ' 0.85';
+        if (0.5 < speed && speed <= 1) return speedEvaluateColor[1] + ' 0.85';
+        if (speed <= 0.5) return speedEvaluateColor[0] + ' 0.85';
+      }
+    })
+    .stroke(null)
+    .tooltip(false);
   return VisitsInTimeChart
 }
 
@@ -197,44 +197,46 @@ function drawSiteSpeedInTime(value) {
   SiteSpeedInTimeChart.xAxis().orientation('bottom');
   SiteSpeedInTimeChart.xAxis(1).orientation('top');
   SiteSpeedInTimeChart.palette(chartColors);
-
+  SiteSpeedInTimeChart.tooltip().enabled(false);
+  SiteSpeedInTimeChart.crosshair().enabled(true).yStroke(null).yLabel(null).xLabel(false);
+  
   SiteSpeedInTimeChart.area()
-      .name('DNS')
-      .stroke(function() { return this.sourceColor + ' 0.6'})
-      .fill(function() { return this.sourceColor + ' 0.7'})
-      .tooltip(null)
-      .hoverFill(function(){return this.sourceColor});
+    .name('DNS')
+    .stroke(function() { return this.sourceColor + ' 0.6'})
+    .fill(function() { return this.sourceColor + ' 0.7'})
+    .tooltip(null)
+    .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
-      .name('Connect')
-      .stroke(function() { return this.sourceColor + ' 0.6'})
-      .fill(function() { return this.sourceColor + ' 0.7'})
-      .tooltip(null)
-      .hoverFill(function(){return this.sourceColor});
+    .name('Connect')
+    .stroke(function() { return this.sourceColor + ' 0.6'})
+    .fill(function() { return this.sourceColor + ' 0.7'})
+    .tooltip(null)
+    .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
-      .name('Response')
-      .stroke(function() { return this.sourceColor + ' 0.6'})
-      .fill(function() { return this.sourceColor + ' 0.7'})
-      .tooltip(null)
-      .hoverFill(function(){return this.sourceColor});
+    .name('Response')
+    .stroke(function() { return this.sourceColor + ' 0.6'})
+    .fill(function() { return this.sourceColor + ' 0.7'})
+    .tooltip(null)
+    .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
-      .name('Html Loading')
-      .stroke(function() { return this.sourceColor + ' 0.6'})
-      .fill(function() { return this.sourceColor + ' 0.7'})
-      .tooltip(null)
-      .hoverFill(function(){return this.sourceColor});
+    .name('Html Loading')
+    .stroke(function() { return this.sourceColor + ' 0.6'})
+    .fill(function() { return this.sourceColor + ' 0.7'})
+    .tooltip(null)
+    .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
-      .name('Html Processing').stroke(function() { return this.sourceColor + ' 0.6'})
-      .fill(function() { return this.sourceColor + ' 0.7'})
-      .tooltip(null)
-      .hoverFill(function(){return this.sourceColor});
+    .name('Html Processing').stroke(function() { return this.sourceColor + ' 0.6'})
+    .fill(function() { return this.sourceColor + ' 0.7'})
+    .tooltip(null)
+    .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
-      .name('Html Rendering')
-      .clip(false)
-      .tooltip(null)
-      .hoverFill(function(){return this.sourceColor})
+    .name('Html Rendering')
+    .clip(false)
+    .tooltip(null)
+    .hoverFill(function(){return this.sourceColor})
     .markers()
-      .enabled(true)
-      .type('circle');
+    .enabled(true)
+    .type('circle');
 
   SiteSpeedInTimeChart.yScale().stackMode('value');
   SiteSpeedInTimeChart.yAxis().labels().width('35px').fontSize(10);
@@ -302,25 +304,48 @@ function drawSiteSpeedInTime(value) {
   });
 
   SiteSpeedInTimeChart.listen('mouseMove', function(evt) {
+    showSecondTooltip = true;
+    var index = evt.pointIndex;
+    var series = evt.target;
+    var seriesData = series.data();
+    var avgSpeed = seriesData.get(index, 'speed');
+    var speedTitle;
+    if (avgSpeed >= 2) speedTitle = 'Very Slow';
+    if (1.5 < avgSpeed && avgSpeed < 2) speedTitle = 'Slow';
+    if (1 < avgSpeed && avgSpeed <= 1.5) speedTitle = 'Not Fast';
+    if (0.5 < avgSpeed && avgSpeed <= 1) speedTitle = 'Fast';
+    if (avgSpeed <= 0.5) speedTitle = 'Very Fast';
+    var date = new Date(seriesData.get(index, 'x'));
+    var res = date.getHours() + ':' + date.getMinutes();
+    $('#tooltip_chart_2 .title .time').html(res.replace(':0', ':00'));
+    $('#tooltip_chart_2 .title .resolution').html(speedTitle);
+    $('#tooltip_chart_2 .title .speed span').html(avgSpeed);
+    $('#dns_time').html(parseFloat(seriesData.get(index, 'dns_ms')).toFixed(1) + 'ms.');
+    $('#connect_time').html(parseFloat(seriesData.get(index, 'connect_ms')).toFixed(1) + 'ms.');
+    $('#response_time').html(parseFloat(seriesData.get(index, 'response_ms')).toFixed(1) + 'ms.');
+    $('#html_loading_time').html(parseFloat(seriesData.get(index, 'html_loading_ms')).toFixed(1) + 'ms.');
+    $('#html_processing_time').html(parseFloat(seriesData.get(index, 'html_processing_ms')).toFixed(1) + 'ms.');
+    $('#html_rendering_time').html(parseFloat(seriesData.get(index, 'html_rendering_ms')).toFixed(1) + 'ms.');
+    $('#tooltip_chart_2').show();
     if (showSecondTooltip)
       $('#tooltip_chart_2').css('top', evt.clientY - 10 - ($('#tooltip_chart_2').height() / 2) ).css('left', evt.clientX + 10)
   });
 
   SiteSpeedInTimeChart.xAxis().labels().padding([5,0,0,0]);
   SiteSpeedInTimeChart.legend()
+    .enabled(true)
+    .fontSize(11)
+    .position('bottom')
+    .align('center')
+    .padding([0,0,0,0])
+    .hAlign('left')
+    .inverted(true)
+    .title()
       .enabled(true)
-      .fontSize(11)
-      .position('bottom')
       .align('center')
-      .padding([0,0,0,0])
-      .hAlign('left')
-      .inverted(true)
-      .title()
-        .enabled(true)
-        .align('center')
-        .margin([10,0,5,0])
-        .hAlign('center')
-        .text('Site Speed by Steps');
+      .margin([10,0,5,0])
+      .hAlign('center')
+      .text('Site Speed by Steps');
   return SiteSpeedInTimeChart
 }
 
