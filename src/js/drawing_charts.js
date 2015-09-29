@@ -76,7 +76,7 @@ function drawTooltipChart(){
   tooltipChart.yAxis().drawFirstLabel(false);
   tooltipChart.padding([0, 30, 0, 0]);
   var series = tooltipChart.bar();
-  series.tooltip(false).clip(false).pointWidth(12.5);
+  series.tooltip(false).clip(false);
   tooltipChart.barGroupsPadding(0.4);
   tooltipChart.container('container-pages-overview');
   tooltipChart.draw();
@@ -153,8 +153,6 @@ function drawVisitsInTime() {
       }).stroke(null).labels()
         .enabled(true)
         .anchor('leftCenter');
-    tooltipChart.bounds().height(pointsCount * 25 + 25);
-    tooltipChart.container().height(pointsCount * 25 + 25);
     $('#tooltip_chart_1').show();
   });
 
@@ -197,7 +195,7 @@ function drawSiteSpeedInTime(value) {
   SiteSpeedInTimeChart.xAxis().orientation('bottom');
   SiteSpeedInTimeChart.xAxis(1).orientation('top');
   SiteSpeedInTimeChart.palette(chartColors);
-  SiteSpeedInTimeChart.tooltip().enabled(false);
+  SiteSpeedInTimeChart.tooltip(false);
   SiteSpeedInTimeChart.crosshair().enabled(true).yStroke(null).yLabel(null).xLabel(false);
   
   SiteSpeedInTimeChart.area()
@@ -205,29 +203,34 @@ function drawSiteSpeedInTime(value) {
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
+    .hoverMarkers(false)
     .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Connect')
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
+    .hoverMarkers(false)
     .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Response')
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
+    .hoverMarkers(false)
     .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Html Loading')
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
+    .hoverMarkers(false)
     .tooltip(null)
     .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Html Processing').stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
+    .hoverMarkers(false)
     .hoverFill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Html Rendering')
