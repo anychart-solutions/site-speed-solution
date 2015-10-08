@@ -105,10 +105,7 @@ function drawVisitsInTime() {
   VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
   VisitsInTimeChart.padding([20,70,0,0]);
   VisitsInTimeChart.interactivity("byX");
-  
-  VisitsInTimeChart.listen('pointsHover', function(evt) {
-    
-  });
+  VisitsInTimeChart.interactivity().selectionMode("none");
   VisitsInTimeChart.listen('pointsHover', function(evt) {
     var isHovered = evt.seriesStatus.length && evt.seriesStatus[0].points.length;
     if (!isHovered) {
@@ -197,7 +194,8 @@ function drawSiteSpeedInTime(value) {
   SiteSpeedInTimeChart.palette(chartColors);
   SiteSpeedInTimeChart.tooltip(false);
   SiteSpeedInTimeChart.crosshair().enabled(true).yStroke(null).yLabel(null).xLabel(false);
-  
+  SiteSpeedInTimeChart.interactivity().selectionMode("none");
+
   SiteSpeedInTimeChart.area()
     .name('DNS')
     .stroke(function() { return this.sourceColor + ' 0.6'})
