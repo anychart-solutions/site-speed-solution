@@ -91,7 +91,7 @@ function drawVisitsInTime() {
   VisitsInTimeChart.yScale().minimum(0);
   VisitsInTimeChart.yAxis().labels().width('35px').fontSize(10);
   VisitsInTimeChart.yAxis().labels().hAlign('right');
-  VisitsInTimeChart.yAxis().title('Visits Amount');
+  VisitsInTimeChart.yAxis().title('Visits');
   VisitsInTimeChart.yAxis().title().padding(0).margin(0);
   VisitsInTimeChart.yAxis().drawFirstLabel(false);
   var dateScale = anychart.scales.dateTime();
