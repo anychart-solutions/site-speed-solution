@@ -1,7 +1,6 @@
 [<img src="https://cdn.anychart.com/images/logo-transparent-segoe.png?2" width="234px" alt="AnyChart - Robust JavaScript/HTML5 Chart library for any project">](http://www.anychart.com)
 
 ## Site Speed Overview Dashboard
-## Wine Sale in France
 This example is made to show the overview of the speed of any website. We have tried to make it a comfortable, visually appealing, and easy to grasp.
 
 [<img src="http://static.anychart.com/images/github/site_speed_dashboard.png" alt="Site Speed Overview Dashboard | AnyChart">](http://anychart.com/solutions/site-speed-solution/)
