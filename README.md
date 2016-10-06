@@ -1,22 +1,16 @@
-# Site Speed Overview Dashboard
-## Sample with the random data
+[<img src="https://cdn.anychart.com/images/logo-transparent-segoe.png?2" width="234px" alt="AnyChart - Robust JavaScript/HTML5 Chart library for any project">](http://www.anychart.com)
 
-This example is made to show the overview of the speed of any website.
+## Site Speed Overview Dashboard
+## Wine Sale in France
+This example is made to show the overview of the speed of any website. We have tried to make it a comfortable, visually appealing, and easy to grasp.
 
-We have tried to make it a comfortable, visually appealing, and easy to grasp.
+[<img src="http://static.anychart.com/images/github/site_speed_dashboard.png" alt="Site Speed Overview Dashboard | AnyChart">](http://anychart.com/solutions/site-speed-solution/)
 
-To use real data and delete the streaming section:
+## Further Learning
+* [Documentation](https://docs.anychart.com)
+* [JavaScript API Reference](https://api.anychart.com)
+* [Code Playground](https://playground.anychart.com)
+* [Technical Support](https://anychart.com/support)
 
-1. index.html 10 line - remove .css file include
-2. index.html 40-44 lines - remove div
-3. index.html 59-60 lines - remove files includes
-4. src/css/styles.css - remove last line (width: 70%;)
-5. add the following code to the page onReady function:
-
-
-    ```
-    drawCharts();
-    updateChartsData(YOUR_REAL_CSV_DATA_STRING);
-    ```
-
-
+## License
+[© AnyChart.com - JavaScript charts](http://www.anychart.com). Released under the [Apache 2.0 License](https://github.com/anychart-solutions/site-speed-solution/blob/master/LICENSE).
