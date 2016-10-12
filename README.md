@@ -5,7 +5,9 @@ This example is made to show the overview of the speed of any website. We have t
 
 [<img src="http://static.anychart.com/images/github/site_speed_dashboard.png" alt="Site Speed Overview Dashboard | AnyChart">](http://anychart.com/solutions/site-speed-solution/)
 
-## Further Learning
+## Links
+* [Site Speed Dashboard at AnyChart.Com](https://www.anychart.com/solutions/site-speed-solution/)
+* [Other Interactive Dashboard Samples at AnyChart.com](https://www.anychart.com/solutions/)
 * [Documentation](https://docs.anychart.com)
 * [JavaScript API Reference](https://api.anychart.com)
 * [Code Playground](https://playground.anychart.com)
