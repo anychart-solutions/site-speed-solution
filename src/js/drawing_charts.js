@@ -6,6 +6,7 @@ var activeColor = '#545f69';
 var showTooltip = false;
 var showSecondTooltip = false;
 var groupedDataSet;
+var stage;
 
 
 function createBarLegendChart(value){
@@ -104,7 +105,7 @@ function drawVisitsInTime() {
   VisitsInTimeChart.xScale(dateScale);
   VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
   VisitsInTimeChart.padding([20,70,0,0]);
-  VisitsInTimeChart.interactivity("byX");
+  VisitsInTimeChart.interactivity().hoverMode('single');
   VisitsInTimeChart.interactivity().selectionMode("none");
   VisitsInTimeChart.listen('pointsHover', function(evt) {
     var isHovered = evt.seriesStatus.length && evt.seriesStatus[0].points.length;
@@ -153,14 +154,14 @@ function drawVisitsInTime() {
     $('#tooltip_chart_1').show();
   });
 
-  VisitsInTimeChart.listen('points', function() {
+  VisitsInTimeChart.listen('pointMouseOut', function() {
     showTooltip = false;
     $('#tooltip_chart_1').hide();
   });
 
-  VisitsInTimeChart.listen('mouseMove', function(evt) {
+  VisitsInTimeChart.listen('pointMouseMove', function(evt) {
     if (showTooltip)
-      $('#tooltip_chart_1').css('top', evt.clientY - 10 - ($('#tooltip_chart_1').height() / 2) ).css('left', evt.clientX + 10)
+      $('#tooltip_chart_1').css('top', evt.originalEvent.clientY - 10 - ($('#tooltip_chart_1').height() / 2) ).css('left', evt.originalEvent.clientX + 10)
   });
 
   VisitsInTimeChart.column()
@@ -273,38 +274,12 @@ function drawSiteSpeedInTime(value) {
     return res.replace(':0', ':00');
   });
 
-  SiteSpeedInTimeChart.listen('pointMouseOver', function(evt) {
-    showSecondTooltip = true;
-    var index = evt.pointIndex;
-    var series = evt.target;
-    var seriesData = series.data();
-    var avgSpeed = seriesData.get(index, 'speed');
-    var speedTitle;
-    if (avgSpeed >= 2) speedTitle = 'Very Slow';
-    if (1.5 < avgSpeed && avgSpeed < 2) speedTitle = 'Slow';
-    if (1 < avgSpeed && avgSpeed <= 1.5) speedTitle = 'Not Fast';
-    if (0.5 < avgSpeed && avgSpeed <= 1) speedTitle = 'Fast';
-    if (avgSpeed <= 0.5) speedTitle = 'Very Fast';
-    var date = new Date(seriesData.get(index, 'x'));
-    var res = date.getHours() + ':' + date.getMinutes();
-    $('#tooltip_chart_2 .title .time').html(res.replace(':0', ':00'));
-    $('#tooltip_chart_2 .title .resolution').html(speedTitle);
-    $('#tooltip_chart_2 .title .speed span').html(avgSpeed);
-    $('#dns_time').html(parseFloat(seriesData.get(index, 'dns_ms')).toFixed(1) + 'ms.');
-    $('#connect_time').html(parseFloat(seriesData.get(index, 'connect_ms')).toFixed(1) + 'ms.');
-    $('#response_time').html(parseFloat(seriesData.get(index, 'response_ms')).toFixed(1) + 'ms.');
-    $('#html_loading_time').html(parseFloat(seriesData.get(index, 'html_loading_ms')).toFixed(1) + 'ms.');
-    $('#html_processing_time').html(parseFloat(seriesData.get(index, 'html_processing_ms')).toFixed(1) + 'ms.');
-    $('#html_rendering_time').html(parseFloat(seriesData.get(index, 'html_rendering_ms')).toFixed(1) + 'ms.');
-    $('#tooltip_chart_2').show();
-  });
-
   SiteSpeedInTimeChart.listen('pointMouseOut', function() {
     showSecondTooltip = false;
     $('#tooltip_chart_2').hide();
   });
 
-  SiteSpeedInTimeChart.listen('mouseMove', function(evt) {
+  SiteSpeedInTimeChart.listen('pointMouseMove', function(evt) {
     showSecondTooltip = true;
     var index = evt.pointIndex;
     var series = evt.target;
@@ -329,7 +304,7 @@ function drawSiteSpeedInTime(value) {
     $('#html_rendering_time').html(parseFloat(seriesData.get(index, 'html_rendering_ms')).toFixed(1) + 'ms.');
     $('#tooltip_chart_2').show();
     if (showSecondTooltip)
-      $('#tooltip_chart_2').css('top', evt.clientY - 10 - ($('#tooltip_chart_2').height() / 2) ).css('left', evt.clientX + 10)
+      $('#tooltip_chart_2').css('top', evt.originalEvent.clientY - 10 - ($('#tooltip_chart_2').height() / 2) ).css('left', evt.originalEvent.clientX + 10)
   });
 
   SiteSpeedInTimeChart.xAxis().labels().padding([5,0,0,0]);
@@ -355,7 +330,7 @@ function drawSiteSpeedInTime(value) {
  * Draw all charts in dashboard without any data (updateChartsData - set data for charts)
  */
 function drawCharts() {
-  var stage = anychart.graphics.create('container-dashboard');
+  stage = anychart.graphics.create('container-dashboard');
   var table = anychart.ui.table(3,1);
   table.cellBorder(null);
   table.getRow(0).height(130);
@@ -480,6 +455,7 @@ function updateAndGroupData(data) {
   @param data {string} - data in csv format
  */
 function updateChartsData(data) {
+  stage.suspend();
   var dataGrouped = updateAndGroupData(data);
   if (groupedDataSet) {
     groupedDataSet.data(dataGrouped);
@@ -510,6 +486,7 @@ function updateChartsData(data) {
 
   VisitsInTimeChart.xScale().maximum(alignDateLeft((new Date()).getTime(), interval));
   SiteSpeedInTimeChart.xScale().maximum(alignDateLeft((new Date()).getTime(), interval));
+  stage.resume();
 }
 
 
