@@ -14,5 +14,5 @@ This example is made to show the overview of the speed of any website. We have t
 * [Technical Support](https://wwww.anychart.com/support)
 
 ## License
-[© AnyChart.com - JavaScript charts](httpы://www.anychart.com). 
+[© AnyChart.com - JavaScript charts](https://www.anychart.com). 
 [![Analytics](https://ga-beacon.appspot.com/UA-228820-4/Solutions/Site-Speed-Solution?pixel&useReferer)](https://github.com/igrigorik/ga-beacon)
