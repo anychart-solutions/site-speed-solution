@@ -24,5 +24,3 @@ $(function () {
   drawCharts();
   updateChartsData(data.join('\n'));
 });
-
-

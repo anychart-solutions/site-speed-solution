@@ -13,22 +13,24 @@ function createBarLegendChart(value){
   var configureSeries = function(series, name, i){
     series
       .stroke(null)
-      .hoverFill(function(){return this.sourceColor})
+      .tooltip(false)
+      .name(name)
+      .hovered()
+        .fill(function(){return this.sourceColor});
+    series
       .labels()
         .enabled(true)
         .position('center')
         .fontSize(13)
         .fontColor(anychart.color.darken(anychart.color.darken(speedEvaluateColor[i])))
-        .textFormatter(function(){
+        .format(function(){
           return this.seriesName
         });
-    series.tooltip(false);
-    series.name(name);
   };
   BarLegendChart = anychart.bar();
   BarLegendChart.palette(anychart.palettes.distinctColors().items(speedEvaluateColor));
   BarLegendChart.xAxis().enabled(false);
-  BarLegendChart.yAxis().labels().fontSize(10).padding([0,0,0,0]).textFormatter(function(){
+  BarLegendChart.yAxis().labels().fontSize(10).padding([0,0,0,0]).format(function(){
     return this.value + 's'
   });
   BarLegendChart.yScale().ticks([0, 0.5, 1, 1.5, 2, 2.5]);
@@ -57,7 +59,7 @@ function createBarLegendChart(value){
     .rotation(0)
     .offsetX(5)
     .offsetY(20)
-    .anchor('leftBottom')
+    .anchor('left-bottom')
     .value(value)
     .zIndex(55)
     .text('cur. ' + value + 's');
@@ -96,7 +98,7 @@ function drawVisitsInTime() {
   VisitsInTimeChart.yAxis().title().padding(0).margin(0);
   VisitsInTimeChart.yAxis().drawFirstLabel(false);
   var dateScale = anychart.scales.dateTime();
-  VisitsInTimeChart.xAxis().labels().textFormatter(function(value) {
+  VisitsInTimeChart.xAxis().labels().format(function(value) {
     var date = new Date(value['tickValue']);
     var res = date.getHours() + ':' + date.getMinutes();
     return res.replace(':0', ':00')
@@ -150,7 +152,7 @@ function drawVisitsInTime() {
         }
       }).stroke(null).labels()
         .enabled(true)
-        .anchor('leftCenter');
+        .anchor('left-center');
     $('#tooltip_chart_1').show();
   });
 
@@ -202,50 +204,57 @@ function drawSiteSpeedInTime(value) {
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
-    .hoverMarkers(false)
-    .hoverFill(function(){return this.sourceColor});
+    .hovered()
+      .markers(false)
+      .fill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Connect')
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
-    .hoverMarkers(false)
-    .hoverFill(function(){return this.sourceColor});
+    .hovered()
+      .markers(false)
+      .fill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Response')
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
-    .hoverMarkers(false)
-    .hoverFill(function(){return this.sourceColor});
+    .hovered()
+      .markers(false)
+      .fill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Html Loading')
     .stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
-    .hoverMarkers(false)
     .tooltip(null)
-    .hoverFill(function(){return this.sourceColor});
+    .hovered()
+      .markers(false)
+      .fill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Html Processing').stroke(function() { return this.sourceColor + ' 0.6'})
     .fill(function() { return this.sourceColor + ' 0.7'})
     .tooltip(null)
-    .hoverMarkers(false)
-    .hoverFill(function(){return this.sourceColor});
+    .hovered()
+      .markers(false)
+      .fill(function(){return this.sourceColor});
   SiteSpeedInTimeChart.area()
     .name('Html Rendering')
     .clip(false)
     .tooltip(null)
-    .hoverFill(function(){return this.sourceColor})
+    .hovered()
+      .fill(function(){return this.sourceColor})
+      .normal()
     .markers()
-    .enabled(true)
-    .type('circle');
+      .enabled(true)
+      .type('circle');
 
-  SiteSpeedInTimeChart.yScale().stackMode('value');
+  SiteSpeedInTimeChart.yScale().stackMode('value').stackDirection('reverse');
   SiteSpeedInTimeChart.yAxis().labels().width('35px').fontSize(10);
   SiteSpeedInTimeChart.yAxis().labels().hAlign('right');
   SiteSpeedInTimeChart.yAxis().drawLastLabel(false);
   SiteSpeedInTimeChart.yAxis().drawFirstLabel(false);
-  SiteSpeedInTimeChart.yAxis().labels().textFormatter(function(){
+  SiteSpeedInTimeChart.yAxis().labels().format(function(){
     return (this.value/1000).toFixed(1) + 's'
   });
 
@@ -261,14 +270,14 @@ function drawSiteSpeedInTime(value) {
     .useHtml(true)
     .align('right')
     .fontColor(activeColor)
-    .anchor('leftCenter')
+    .anchor('left-center')
     .offsetX(5);
 
   var dateScale = anychart.scales.dateTime();
   SiteSpeedInTimeChart.xAxis(1).labels(null);
   SiteSpeedInTimeChart.xScale(dateScale);
   SiteSpeedInTimeChart.xScale().ticks().interval('n', interval*2);
-  SiteSpeedInTimeChart.xAxis().labels().textFormatter(function(value) {
+  SiteSpeedInTimeChart.xAxis().labels().format(function(value) {
     var date = new Date(value['tickValue']);
     var res = date.getHours() + ':' + date.getMinutes();
     return res.replace(':0', ':00');
@@ -331,7 +340,7 @@ function drawSiteSpeedInTime(value) {
  */
 function drawCharts() {
   stage = anychart.graphics.create('container-dashboard');
-  var table = anychart.ui.table(3,1);
+  var table = anychart.standalones.table(3,1);
   table.cellBorder(null);
   table.getRow(0).height(130);
   table.getRow(1).height('35%');
@@ -365,15 +374,15 @@ function getPagesData(sum_pagesData) {
 function updateAndGroupData(data) {
   var dataset = anychart.data.set(data, {rowsSeparator: '\n', columnsSeparator: ';', ignoreFirstLine: true});
   var q = dataset.mapAs({
-    'x': [0],
-    'dns_ms': [1],
-    'connect_ms': [2],
-    'response_ms': [3],
-    'html_loading_ms': [4],
-    'html_processing_ms': [5],
-    'html_rendering_ms': [6],
-    'viewers_count': [7],
-    'pagesData': [8]
+    'x': 0,
+    'dns_ms': 1,
+    'connect_ms': 2,
+    'response_ms': 3,
+    'html_loading_ms': 4,
+    'html_processing_ms': 5,
+    'html_rendering_ms': 6,
+    'viewers_count': 7,
+    'pagesData': 8
   });
 
   q = q.sort('x', 'asc');
@@ -462,25 +471,25 @@ function updateChartsData(data) {
   } else {
     groupedDataSet = anychart.data.set(dataGrouped);
 
-    var visitsInTimeGroupedData = groupedDataSet.mapAs(null, {'value': ['viewers_count'], 'speed': ['speed']});
+    var visitsInTimeGroupedData = groupedDataSet.mapAs({'value': ['viewers_count'], 'speed': ['speed']});
     VisitsInTimeChart.getSeries(0).data(visitsInTimeGroupedData);
 
-    var SiteSpeedInTimeDataDns = groupedDataSet.mapAs(null, {'value': ['dns_ms']});
+    var SiteSpeedInTimeDataDns = groupedDataSet.mapAs({'value': ['dns_ms']});
     SiteSpeedInTimeChart.getSeries(0).data(SiteSpeedInTimeDataDns);
 
-    var SiteSpeedInTimeDataConnect = groupedDataSet.mapAs(null, {'value': ['connect_ms']});
+    var SiteSpeedInTimeDataConnect = groupedDataSet.mapAs({'value': ['connect_ms']});
     SiteSpeedInTimeChart.getSeries(1).data(SiteSpeedInTimeDataConnect);
 
-    var SiteSpeedInTimeDataResponse = groupedDataSet.mapAs(null, {'value': ['response_ms']});
+    var SiteSpeedInTimeDataResponse = groupedDataSet.mapAs({'value': ['response_ms']});
     SiteSpeedInTimeChart.getSeries(2).data(SiteSpeedInTimeDataResponse);
 
-    var SiteSpeedInTimeDataHtmlLoading = groupedDataSet.mapAs(null, {'value': ['html_loading_ms']});
+    var SiteSpeedInTimeDataHtmlLoading = groupedDataSet.mapAs({'value': ['html_loading_ms']});
     SiteSpeedInTimeChart.getSeries(3).data(SiteSpeedInTimeDataHtmlLoading);
 
-    var SiteSpeedInTimeDataHtmlProcessing = groupedDataSet.mapAs(null, {'value': ['html_processing_ms']});
+    var SiteSpeedInTimeDataHtmlProcessing = groupedDataSet.mapAs({'value': ['html_processing_ms']});
     SiteSpeedInTimeChart.getSeries(4).data(SiteSpeedInTimeDataHtmlProcessing);
 
-    var SiteSpeedInTimeDataHtmlRendering = groupedDataSet.mapAs(null, {'value': ['html_rendering_ms']});
+    var SiteSpeedInTimeDataHtmlRendering = groupedDataSet.mapAs({'value': ['html_rendering_ms']});
     SiteSpeedInTimeChart.getSeries(5).data(SiteSpeedInTimeDataHtmlRendering);
   }
 

@@ -97,4 +97,3 @@ function generateStartData() {
   }
   return result;
 }
-
