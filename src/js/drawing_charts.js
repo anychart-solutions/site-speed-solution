@@ -108,7 +108,7 @@ function drawVisitsInTime() {
   VisitsInTimeChart.xScale().ticks().interval('n', interval*2);
   VisitsInTimeChart.padding([20,70,0,0]);
   VisitsInTimeChart.interactivity().hoverMode('single');
-  VisitsInTimeChart.interactivity().selectionMode("none");
+  VisitsInTimeChart.interactivity().selectionMode("single-select");
   VisitsInTimeChart.listen('pointsHover', function(evt) {
     var isHovered = evt.seriesStatus.length && evt.seriesStatus[0].points.length;
     if (!isHovered) {
@@ -197,7 +197,6 @@ function drawSiteSpeedInTime(value) {
   SiteSpeedInTimeChart.palette(chartColors);
   SiteSpeedInTimeChart.tooltip(false);
   SiteSpeedInTimeChart.crosshair().enabled(true).yStroke(null).yLabel(null).xLabel(false);
-  SiteSpeedInTimeChart.interactivity().selectionMode("none");
 
   SiteSpeedInTimeChart.area()
     .name('DNS')
@@ -313,7 +312,7 @@ function drawSiteSpeedInTime(value) {
     $('#html_rendering_time').html(parseFloat(seriesData.get(index, 'html_rendering_ms')).toFixed(1) + 'ms.');
     $('#tooltip_chart_2').show();
     if (showSecondTooltip)
-      $('#tooltip_chart_2').css('top', evt.originalEvent.clientY - 10 - ($('#tooltip_chart_2').height() / 2) ).css('left', evt.originalEvent.clientX + 10)
+      $('#tooltip_chart_2').css('top', evt.originalEvent.clientY - 20 - ($('#tooltip_chart_2').height() / 2) ).css('left', evt.originalEvent.clientX + 10)
   });
 
   SiteSpeedInTimeChart.xAxis().labels().padding([5,0,0,0]);
